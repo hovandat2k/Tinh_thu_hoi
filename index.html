@@ -147,9 +147,9 @@ td.hit{background:var(--accent);color:#fff;font-weight:800;border-radius:6px}
     <div id="result" hidden>
       <div id="sheetWrap"><div class="sheet" id="sheet"></div></div>
       <div class="actions">
-        <button type="button" class="primary wide" id="copyImg">📋 Sao chép ảnh</button>
+        <button type="button" class="primary wide" id="copyImg">📋 Sao chép mẫu</button>
         <button type="button" class="ghost" id="shareImg">📤 Chia sẻ</button>
-        <button type="button" class="ghost" id="saveImg">⬇️ Tải ảnh</button>
+        <button type="button" class="ghost" id="newBtn">🔄 Đổi mẫu</button>
         <button type="button" class="ghost wide" id="copyTxt">📝 Sao chép dạng chữ</button>
       </div>
     </div>
@@ -247,7 +247,7 @@ function render(r){
   $('sheet').innerHTML = `
     <div class="sh-head">
       <div class="sh-name">${r.name ? esc(r.name) : 'Mẫu cà phê'}</div>
-      <div class="sh-tag">Ẩm ${degree(r.am)} ${r.type === 'lt' ? '&lt; 15' : '≥ 15'}</div>
+      <div class="sh-tag">Ẩm ${degree(r.am)}</div>
     </div>
     <div class="sh-grid">
     ${left.map((x,i)=>`
@@ -357,7 +357,7 @@ async function download(){
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = fileName();
   document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href), 4000);
 }
-$('saveImg').addEventListener('click', () => download().then(()=>toast('⬇️ Đã tải ảnh')).catch(e=>toast('Lỗi: '+e.message)));
+$('newBtn').addEventListener('click', () => { $('clearBtn').click(); window.scrollTo({top:0,behavior:'smooth'}); setTimeout(()=>$('name').focus(), 250); });
 $('copyTxt').addEventListener('click', async () => {
   try { await navigator.clipboard.writeText(lastText); toast('✅ Đã sao chép dạng chữ'); }
   catch(e){ const ta=document.createElement('textarea'); ta.value=lastText; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); toast('✅ Đã sao chép dạng chữ'); }
