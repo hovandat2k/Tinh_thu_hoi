@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#5b3a29">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Tính thu hồi cà phê</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☕</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+:root{
+  --bg:#f6efe6; --surface:#fffaf4; --ink:#2b1d14; --muted:#7a6656; --line:#e7d9c8;
+  --brand:#5b3a29; --brand-2:#8a5a3b; --accent:#c8873a; --ok:#2f7d4f; --warn:#b4492f;
+  --field:#fff; --shadow:0 6px 24px rgba(91,58,41,.10);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#17110d; --surface:#221912; --ink:#f3e7da; --muted:#b39c88; --line:#3a2b20;
+    --brand:#e0a86b; --brand-2:#c98d55; --accent:#e0a86b; --field:#1b140f; --shadow:0 6px 24px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#17110d; --surface:#221912; --ink:#f3e7da; --muted:#b39c88; --line:#3a2b20;
+  --brand:#e0a86b; --brand-2:#c98d55; --accent:#e0a86b; --field:#1b140f; --shadow:0 6px 24px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  font-size:16px;line-height:1.45;padding:0 16px calc(32px + env(safe-area-inset-bottom))}
+.wrap{max-width:560px;margin:0 auto}
+header{padding:calc(18px + env(safe-area-inset-top)) 0 14px;display:flex;align-items:center;gap:12px}
+.logo{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#6b4430,#a86f45);display:grid;place-items:center;font-size:24px;box-shadow:var(--shadow);flex:none}
+h1{font-size:20px;margin:0;font-weight:800;letter-spacing:-.01em}
+.sub{margin:0;color:var(--muted);font-size:13px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:16px;box-shadow:var(--shadow);margin-bottom:14px}
+.field{margin-bottom:12px}
+.field:last-of-type{margin-bottom:0}
+label{display:flex;justify-content:space-between;align-items:baseline;font-weight:600;font-size:14px;margin-bottom:6px}
+label small{font-weight:500;color:var(--muted);font-size:12px}
+label .req{color:var(--warn)}
+.inp{position:relative}
+input{width:100%;font:inherit;font-size:18px;font-weight:600;color:var(--ink);background:var(--field);border:1.5px solid var(--line);
+  border-radius:14px;padding:13px 52px 13px 14px;outline:none;transition:border-color .15s, box-shadow .15s;-webkit-appearance:none;appearance:none}
+input::placeholder{color:var(--muted);opacity:.6;font-weight:500}
+input:focus{border-color:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 22%,transparent)}
+input.bad{border-color:var(--warn)}
+.unit{position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--muted);font-weight:600;font-size:15px;pointer-events:none}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.hint{font-size:12.5px;color:var(--muted);margin-top:6px;min-height:1em}
+.hint.err{color:var(--warn);font-weight:600}
+.btns{display:flex;gap:10px;margin-top:14px}
+button{font:inherit;font-weight:700;font-size:15px;border:0;border-radius:14px;padding:13px 14px;cursor:pointer;transition:transform .08s, opacity .15s;
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px}
+button:active{transform:scale(.97)}
+.primary{background:var(--brand);color:#fff;flex:1}
+:root[data-theme="dark"] .primary{color:#1b120c}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .primary{color:#1b120c}}
+.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.actions .wide{grid-column:1/-1}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translate(-50%,20px);background:#2b1d14;color:#fff;
+  padding:12px 18px;border-radius:999px;font-size:14px;font-weight:600;opacity:0;transition:.25s;pointer-events:none;z-index:9;max-width:calc(100% - 32px);text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.empty{text-align:center;color:var(--muted);padding:26px 10px;font-size:14px}
+.empty b{display:block;font-size:30px;margin-bottom:6px}
+
+/* ===== Result sheet (fixed light look so the copied image is always readable) ===== */
+#sheetWrap{border-radius:18px;overflow:hidden;box-shadow:var(--shadow);border:1px solid var(--line)}
+.sheet{background:#fffdf9;color:#2b1d14;padding:18px 16px 14px;font-family:"Be Vietnam Pro",system-ui,sans-serif}
+.sh-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;border-bottom:2px solid #5b3a29;padding-bottom:10px;margin-bottom:10px}
+.sh-name{font-size:19px;font-weight:800;color:#5b3a29;line-height:1.2;word-break:break-word}
+.sh-name.none{color:#a08a78;font-weight:600;font-size:15px}
+.sh-tag{flex:none;font-size:11.5px;font-weight:700;background:#f3e3d0;color:#7a4a2c;border-radius:999px;padding:4px 10px;white-space:nowrap}
+.sh-row{display:grid;grid-template-columns:118px 1fr;gap:10px;padding:9px 0;border-bottom:1px dashed #e6d6c3;align-items:center}
+.sh-row:last-of-type{border-bottom:0}
+.sh-k{font-size:12px;color:#8a7362;font-weight:600;line-height:1.2}
+.sh-v{font-size:17px;font-weight:800;color:#2b1d14;margin-top:2px}
+.sh-calc{font-size:14.5px;font-weight:500;color:#3b2a1e;line-height:1.35;word-break:break-word}
+.sh-calc b{font-weight:800;color:#5b3a29}
+.sh-final{margin-top:10px;background:linear-gradient(135deg,#5b3a29,#8a5a3b);color:#fff;border-radius:14px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.sh-final .l{font-size:13px;opacity:.9;line-height:1.3}
+.sh-final .v{font-size:26px;font-weight:800;letter-spacing:-.01em;white-space:nowrap}
+.sh-foot{margin-top:8px;font-size:11px;color:#a08a78;text-align:right}
+
+details{margin-top:4px}
+summary{cursor:pointer;font-weight:700;font-size:14px;color:var(--brand);list-style:none;display:flex;align-items:center;gap:6px}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"▸";transition:transform .15s}
+details[open] summary::before{transform:rotate(90deg)}
+.tbl{overflow-x:auto;margin-top:10px;border-radius:12px;border:1px solid var(--line)}
+table{border-collapse:collapse;width:100%;font-size:12.5px;font-variant-numeric:tabular-nums}
+th,td{padding:6px 5px;text-align:center;border-bottom:1px solid var(--line)}
+th{background:color-mix(in srgb,var(--brand) 12%,transparent);font-weight:700}
+td:first-child,th:first-child{font-weight:700;position:sticky;left:0;background:var(--surface)}
+td.hit{background:var(--accent);color:#fff;font-weight:800;border-radius:6px}
+.theme{margin-left:auto;background:var(--surface);border:1px solid var(--line);color:var(--ink);width:44px;height:44px;min-height:0;padding:0;border-radius:14px;font-size:18px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo">☕</div>
+    <div>
+      <h1>Tính thu hồi cà phê</h1>
+      <p class="sub">Trừ ẩm theo bảng · mốc 12.5%</p>
+    </div>
+    <button class="theme" id="themeBtn" aria-label="Đổi giao diện sáng/tối">🌓</button>
+  </header>
+
+  <form class="card" id="form" autocomplete="off" novalidate>
+    <div class="field">
+      <label for="name">Tên mẫu <small>không bắt buộc</small></label>
+      <div class="inp"><input id="name" type="text" enterkeyhint="next" placeholder="VD: Cô Liễu" style="padding-right:14px"></div>
+    </div>
+    <div class="row2">
+      <div class="field">
+        <label for="kl">KL <span class="req">*</span></label>
+        <div class="inp"><input id="kl" inputmode="decimal" enterkeyhint="next" placeholder="350.54"><span class="unit">g</span></div>
+      </div>
+      <div class="field">
+        <label for="klq">KL quả <small>trống = 0</small></label>
+        <div class="inp"><input id="klq" inputmode="decimal" enterkeyhint="next" placeholder="0"><span class="unit">g</span></div>
+      </div>
+    </div>
+    <div class="field">
+      <label for="am">Độ ẩm <span class="req">*</span></label>
+      <div class="inp"><input id="am" inputmode="decimal" enterkeyhint="done" placeholder="VD: 14.5 hoặc 18.8"><span class="unit">°</span></div>
+      <div class="hint" id="amHint">Nhập 14.5 (= 14°5). Ẩm từ 15 đến 25 sẽ tra bảng trừ ẩm.</div>
+    </div>
+    <div class="btns">
+      <button type="button" class="ghost" id="clearBtn">Xoá</button>
+      <button type="submit" class="primary">Tính kết quả</button>
+    </div>
+  </form>
+
+  <section id="out">
+    <div class="card empty" id="empty"><b>🧮</b>Nhập KL và độ ẩm để xem kết quả.</div>
+    <div id="result" hidden>
+      <div id="sheetWrap"><div class="sheet" id="sheet"></div></div>
+      <div class="actions">
+        <button type="button" class="primary wide" id="copyImg">📋 Sao chép ảnh</button>
+        <button type="button" class="ghost" id="shareImg">📤 Chia sẻ</button>
+        <button type="button" class="ghost" id="saveImg">⬇️ Tải ảnh</button>
+        <button type="button" class="ghost wide" id="copyTxt">📝 Sao chép dạng chữ</button>
+      </div>
+    </div>
+  </section>
+
+  <div class="card" style="margin-top:14px">
+    <details id="tblDetails">
+      <summary>Bảng trừ ẩm cà phê</summary>
+      <div class="tbl"><table id="tbl"></table></div>
+    </details>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== Bảng trừ ẩm (hàng = phần nguyên 15..25, cột = phần thập phân 0..9) =====
+const TABLE = {
+  15:[0,0.1,0.2,0.37,0.47,0.57,0.67,0.77,0.88,0.99],
+  16:[1.13,1.24,1.35,1.46,1.57,1.68,1.8,1.92,2.04,2.16],
+  17:[2.31,2.44,2.57,2.7,2.83,2.96,3.1,3.24,3.38,3.52],
+  18:[3.67,3.81,3.96,4.11,4.36,4.41,4.56,4.71,4.87,5.03],
+  19:[5.2,5.37,5.54,5.71,5.88,6.05,6.23,6.41,6.59,6.77],
+  20:[6.95,7.13,7.32,7.51,7.71,7.91,8.11,8.31,8.51,8.71],
+  21:[8.91,9.12,9.34,9.56,9.78,10,10.2,10.4,10.7,10.9],
+  22:[11.1,11.4,11.6,11.9,12.1,12.4,12.6,12.9,13.1,13.4],
+  23:[13.6,13.9,14.2,14.4,14.7,15,15.3,15.6,15.8,16.1],
+  24:[16.4,16.7,17,17.3,17.6,17.9,18.2,18.5,18.8,19.2],
+  25:[19.5]
+};
+const MOC = 12.5;      // mốc thủy phần chuẩn
+const CONG = 0.5;      // cộng thêm khi tra bảng
+const MAU = 2000;      // 2000 / KL còn lại
+
+const $ = id => document.getElementById(id);
+const r2 = x => Math.round((x + Number.EPSILON) * 100) / 100;
+const f = (x, d = 2) => { const s = (Math.round((x + Number.EPSILON) * 10**d) / 10**d).toFixed(d); return s.replace(/\.?0+$/, '') || '0'; };
+const f2 = x => (Math.round((x + Number.EPSILON) * 100) / 100).toFixed(2);
+const esc = s => s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function parseNum(s){
+  s = String(s || '').trim().replace(/\s/g,'').replace(/[°º˚]/g,'.').replace(',', '.');
+  if (s === '') return null;
+  if (!/^\d*\.?\d*$/.test(s) || s === '.') return NaN;
+  return parseFloat(s);
+}
+const degree = m => { const t = Math.round(m * 10); return Math.floor(t / 10) + '°' + (t % 10); };
+
+function compute(name, kl, klq, am){
+  const tong = r2(kl + klq / 2);
+  const res = { name, kl, klq, am, tong, lines: [] };
+  if (am < 15){
+    const div = 1 + am / 100;
+    const A = r2(am / div);
+    const over = A > MOC;
+    const B = r2(Math.abs(A - MOC));
+    const C = r2(B / 100 * tong);
+    const D = r2(over ? tong - C : tong + C);
+    const E = MAU / D;
+    res.type = 'lt';
+    res.E = E;
+    res.lines = [
+      `A: ${degree(am)} → % Thủy phần = ${f(am,1)}/${f(div,3)} = <b>${f2(A)} %</b>`,
+      over ? `${f2(A)} − ${MOC} = ${f2(B)} % × ${f2(tong)} = <b>${f2(C)} (g)</b>`
+           : `${MOC} − ${f2(A)} = ${f2(B)} % × ${f2(tong)} = <b>${f2(C)} (g)</b>`,
+      `${f2(tong)} ${over ? '−' : '+'} ${f2(C)} = <b>${f2(D)} (g)</b>`,
+      `${MAU} / ${f2(D)} = <b>${f2(E)} Kg</b>`
+    ];
+  } else {
+    const t = Math.round(am * 10), row = Math.floor(t / 10), col = t % 10;
+    const v = TABLE[row] && TABLE[row][col];
+    if (v === undefined) return { error: 'Độ ẩm vượt quá bảng trừ ẩm (tối đa 25°0).' };
+    const A = r2(v + CONG);
+    const B = r2(tong * A / 100);
+    const C = r2(tong - B);
+    const D = MAU / C;
+    res.type = 'ge'; res.hit = [row, col];
+    res.E = D;
+    res.lines = [
+      `A: ${degree(am)} → ${f(v)} + ${CONG} = <b>${f2(A)}</b>`,
+      `${f2(tong)} × ${f2(A)} % = <b>${f2(B)} (g)</b>`,
+      `${f2(tong)} − ${f2(B)} = <b>${f2(C)} (g)</b>`,
+      `${MAU} / ${f2(C)} = <b>${f2(D)} Kg</b>`
+    ];
+  }
+  return res;
+}
+
+function render(r){
+  const now = new Date();
+  const ts = now.toLocaleDateString('vi-VN') + ' ' + now.toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'});
+  const rows = [
+    ['KL', f(r.kl) + ' g'],
+    ['KL quả', f(r.klq) + ' g'],
+    ['Tổng KL<br><span style="font-weight:500">(KL + KL quả/2)</span>', f2(r.tong) + ' g'],
+    ['', '']
+  ];
+  $('sheet').innerHTML = `
+    <div class="sh-head">
+      <div class="sh-name ${r.name ? '' : 'none'}">${r.name ? esc(r.name) : 'Mẫu cà phê'}</div>
+      <div class="sh-tag">Ẩm ${degree(r.am)} ${r.type === 'lt' ? '&lt; 15' : '≥ 15'}</div>
+    </div>
+    ${rows.map((x,i)=>`
+      <div class="sh-row">
+        <div>${x[0] ? `<div class="sh-k">${x[0]}</div><div class="sh-v">${x[1]}</div>` : ''}</div>
+        <div class="sh-calc">${r.lines[i]}</div>
+      </div>`).join('')}
+    <div class="sh-final"><div class="l">Thu hồi<br>(${MAU} / KL còn lại)</div><div class="v">${f2(r.E)} Kg</div></div>
+    <div class="sh-foot">${ts}</div>`;
+  $('empty').hidden = true; $('result').hidden = false;
+  buildTable(r.hit);
+  lastText = [
+    r.name ? `📌 ${r.name}` : '📌 Mẫu cà phê',
+    `KL: ${f(r.kl)} g | KL quả: ${f(r.klq)} g | Tổng KL: ${f2(r.tong)} g`,
+    ...r.lines.map(l => '• ' + l.replace(/<[^>]+>/g,'')),
+    `➡️ Thu hồi: ${f2(r.E)} Kg`
+  ].join('\n');
+}
+let lastText = '';
+
+function buildTable(hit){
+  let h = '<tr><th>Ẩm</th>' + [...Array(10).keys()].map(i=>`<th>${i}</th>`).join('') + '</tr>';
+  for (const k of Object.keys(TABLE)){
+    h += `<tr><td>${k}</td>` + [...Array(10).keys()].map(i=>{
+      const v = TABLE[k][i]; const on = hit && hit[0]==k && hit[1]==i;
+      return `<td class="${on?'hit':''}">${v===undefined?'':v}</td>`;}).join('') + '</tr>';
+  }
+  $('tbl').innerHTML = h;
+}
+buildTable();
+
+function setErr(id, bad){ $(id).classList.toggle('bad', bad); }
+function calc(showErrors = true){
+  const name = $('name').value.trim();
+  const kl = parseNum($('kl').value), klq0 = parseNum($('klq').value), am = parseNum($('am').value);
+  const klq = klq0 === null ? 0 : klq0;
+  let err = '';
+  setErr('kl', false); setErr('klq', false); setErr('am', false);
+  if (kl === null || isNaN(kl) || kl <= 0){ err = 'Vui lòng nhập KL hợp lệ.'; if (showErrors) setErr('kl', true); }
+  else if (isNaN(klq) || klq < 0){ err = 'KL quả không hợp lệ.'; if (showErrors) setErr('klq', true); }
+  else if (am === null || isNaN(am) || am <= 0){ err = 'Vui lòng nhập độ ẩm.'; if (showErrors) setErr('am', true); }
+  const hint = $('amHint');
+  if (err){
+    if (showErrors){ hint.textContent = err; hint.classList.add('err'); }
+    return false;
+  }
+  const r = compute(name, kl, klq, am);
+  if (r.error){ hint.textContent = r.error; hint.classList.add('err'); setErr('am', true); return false; }
+  hint.classList.remove('err');
+  hint.textContent = am < 15 ? `Ẩm ${degree(am)} < 15 → tính % thủy phần.` : `Ẩm ${degree(am)} ≥ 15 → tra bảng hàng ${Math.floor(Math.round(am*10)/10)}, cột ${Math.round(am*10)%10}.`;
+  render(r);
+  try { localStorage.setItem('tth_last', JSON.stringify({name, kl:$('kl').value, klq:$('klq').value, am:$('am').value})); } catch(e){}
+  return true;
+}
+
+$('form').addEventListener('submit', e => {
+  e.preventDefault();
+  if (calc(true)){ document.activeElement.blur(); setTimeout(()=>$('result').scrollIntoView({behavior:'smooth',block:'start'}), 80); }
+});
+['name','kl','klq','am'].forEach((id, i, arr) => {
+  $(id).addEventListener('input', () => calc(false));
+  $(id).addEventListener('keydown', e => {
+    if (e.key === 'Enter' && i < arr.length - 1){ e.preventDefault(); $(arr[i+1]).focus(); }
+  });
+});
+$('clearBtn').addEventListener('click', () => {
+  ['name','kl','klq','am'].forEach(id => { $(id).value=''; setErr(id,false); });
+  $('result').hidden = true; $('empty').hidden = false; buildTable();
+  $('amHint').classList.remove('err'); $('amHint').textContent = 'Nhập 14.5 (= 14°5). Ẩm từ 15 đến 25 sẽ tra bảng trừ ẩm.';
+  try { localStorage.removeItem('tth_last'); } catch(e){}
+  $('kl').focus();
+});
+
+// ===== Ảnh kết quả =====
+function toast(msg){ const t=$('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('show'),2400); }
+function makeBlob(){
+  return document.fonts.ready.then(() => html2canvas($('sheet'), { scale: Math.max(2, window.devicePixelRatio || 2), backgroundColor:'#fffdf9', useCORS:true, logging:false }))
+    .then(c => new Promise(res => c.toBlob(res, 'image/png')));
+}
+function fileName(){ const n = ($('name').value.trim() || 'mau').replace(/[^\p{L}\p{N}]+/gu,'_'); return `thu_hoi_${n}.png`; }
+
+$('copyImg').addEventListener('click', async () => {
+  try {
+    if (!navigator.clipboard || !window.ClipboardItem) throw new Error('nosupport');
+    // Truyền Promise vào ClipboardItem để Safari/iOS chấp nhận (giữ user-gesture)
+    await navigator.clipboard.write([new ClipboardItem({ 'image/png': makeBlob() })]);
+    toast('✅ Đã sao chép ảnh — mở Zalo/Messenger và dán');
+  } catch (e) {
+    // Không hỗ trợ copy ảnh → dùng chia sẻ
+    const ok = await shareBlob().catch(()=>false);
+    if (!ok) toast('Trình duyệt chưa hỗ trợ sao chép ảnh. Hãy dùng "Tải ảnh".');
+  }
+});
+async function shareBlob(){
+  const blob = await makeBlob();
+  const file = new File([blob], fileName(), { type: 'image/png' });
+  if (navigator.canShare && navigator.canShare({ files: [file] })){
+    await navigator.share({ files: [file], title: 'Kết quả thu hồi' });
+    return true;
+  }
+  return false;
+}
+$('shareImg').addEventListener('click', async () => {
+  try { if (!(await shareBlob())) { toast('Thiết bị không hỗ trợ chia sẻ — đã tải ảnh'); download(); } }
+  catch(e){ if (e.name !== 'AbortError') toast('Không chia sẻ được: ' + e.message); }
+});
+async function download(){
+  const blob = await makeBlob();
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = fileName();
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href), 4000);
+}
+$('saveImg').addEventListener('click', () => download().then(()=>toast('⬇️ Đã tải ảnh')).catch(e=>toast('Lỗi: '+e.message)));
+$('copyTxt').addEventListener('click', async () => {
+  try { await navigator.clipboard.writeText(lastText); toast('✅ Đã sao chép dạng chữ'); }
+  catch(e){ const ta=document.createElement('textarea'); ta.value=lastText; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); toast('✅ Đã sao chép dạng chữ'); }
+});
+
+// ===== Theme =====
+(function(){
+  let t = null; try { t = localStorage.getItem('tth_theme'); } catch(e){}
+  if (t) document.documentElement.dataset.theme = t;
+  $('themeBtn').addEventListener('click', () => {
+    const dark = document.documentElement.dataset.theme ? document.documentElement.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+    const n = dark ? 'light' : 'dark'; document.documentElement.dataset.theme = n;
+    try { localStorage.setItem('tth_theme', n); } catch(e){}
+  });
+})();
+
+// Khôi phục lần nhập gần nhất
+try {
+  const s = JSON.parse(localStorage.getItem('tth_last') || 'null');
+  if (s){ $('name').value=s.name||''; $('kl').value=s.kl||''; $('klq').value=s.klq||''; $('am').value=s.am||''; calc(false); }
+} catch(e){}
+</script>
+</body>
+</html>
