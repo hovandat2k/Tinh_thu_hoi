@@ -110,6 +110,21 @@ th{background:color-mix(in srgb,var(--brand) 12%,transparent);font-weight:700}
 td:first-child,th:first-child{font-weight:700;position:sticky;left:0;background:var(--surface)}
 td.hit{background:var(--accent);color:#fff;font-weight:800;border-radius:6px}
 .theme{margin-left:auto;background:var(--surface);border:1px solid var(--line);color:var(--ink);width:44px;height:44px;min-height:0;padding:0;border-radius:14px;font-size:18px}
+/* Khung nhập gọn */
+#form{padding:12px}
+#form .seg{margin-bottom:10px;padding:3px}
+#form .seg button{min-height:34px;padding:5px;font-size:14px}
+#form .field{margin-bottom:8px}
+#form label{justify-content:flex-start;gap:3px;font-size:13px;margin-bottom:4px}
+#form input{font-size:16px;padding:9px 26px 9px 10px;border-radius:11px}
+#form #name{padding-right:10px}
+#form .unit{right:9px;font-size:14px}
+.row3{display:grid;grid-template-columns:1.15fr 1fr 0.95fr;gap:8px}
+.row3 .field{margin-bottom:0}
+#form .hint{margin-top:6px}
+#form .btns{margin-top:10px;gap:8px}
+#form .btns button{min-height:40px;padding:8px 12px;font-size:15px;border-radius:11px}
+header{padding-bottom:10px}
 </style>
 </head>
 <body>
@@ -131,7 +146,7 @@ td.hit{background:var(--accent);color:#fff;font-weight:800;border-radius:6px}
       <label for="name">Tên mẫu</label>
       <div class="inp"><input id="name" type="text" enterkeyhint="next" style="padding-right:14px"></div>
     </div>
-    <div class="row2">
+    <div class="row3">
       <div class="field">
         <label for="kl">KL <span class="req">*</span></label>
         <div class="inp"><input id="kl" inputmode="decimal" enterkeyhint="next"><span class="unit">g</span></div>
@@ -140,12 +155,12 @@ td.hit{background:var(--accent);color:#fff;font-weight:800;border-radius:6px}
         <label for="klq">KL quả</label>
         <div class="inp"><input id="klq" inputmode="decimal" enterkeyhint="next"><span class="unit">g</span></div>
       </div>
+      <div class="field">
+        <label for="am">Độ ẩm <span class="req">*</span></label>
+        <div class="inp"><input id="am" inputmode="decimal" enterkeyhint="done"><span class="unit">°</span></div>
+      </div>
     </div>
-    <div class="field">
-      <label for="am">Độ ẩm <span class="req">*</span></label>
-      <div class="inp"><input id="am" inputmode="decimal" enterkeyhint="done"><span class="unit">°</span></div>
-      <div class="hint" id="amHint"></div>
-    </div>
+    <div class="hint" id="amHint"></div>
     <div class="btns">
       <button type="button" class="ghost" id="clearBtn">Xoá</button>
       <button type="submit" class="primary">Tính kết quả</button>
