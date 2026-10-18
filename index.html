@@ -257,7 +257,7 @@ function render(r){
       <div class="sh-l ${x[2]}"><span>${x[0]}</span><span>${x[1]}</span></div>
       <div class="sh-r"><div class="sh-calc">${r.lines[i]}</div></div>`).join('')}
     </div>
-    <div class="sh-final"><div class="l">Thu hồi<br>(${MAU} / KL còn lại)</div><div class="v">${f2(r.E)} Kg</div></div>`;
+    <div class="sh-final"><div class="l">Thu hồi</div><div class="v">${f2(r.E)} Kg</div></div>`;
   $('empty').hidden = true; $('result').hidden = false;
   buildTable(r.hit);
   lastText = [
