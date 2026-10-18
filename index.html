@@ -72,8 +72,10 @@ button:active{transform:scale(.97)}
 /* ===== Result sheet (fixed light look so the copied image is always readable) ===== */
 #sheetWrap{border-radius:18px;overflow:hidden;box-shadow:var(--shadow);border:1px solid var(--line)}
 .sheet{background:#fbfefb;color:#1d3324;padding:18px 16px 14px;font-family:"Be Vietnam Pro",system-ui,sans-serif}
-.sh-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;border-bottom:2px solid #2f7a4a;padding-bottom:10px;margin-bottom:10px}
-.sh-name{font-size:19px;font-weight:800;color:#2f7a4a;line-height:1.2;word-break:break-word}
+.sh-head{display:grid;grid-template-columns:1fr minmax(0,auto) 1fr;align-items:center;gap:10px;border-bottom:2px solid #2f7a4a;padding-bottom:10px;margin-bottom:10px}
+.sh-name{font-size:19px;font-weight:800;color:#2f7a4a;line-height:1.2;word-break:break-word;text-align:center}
+.sh-tag.ghost-tag{visibility:hidden;justify-self:start}
+.sh-tag:last-child{justify-self:end}
 .sh-tag{flex:none;font-size:11.5px;font-weight:700;background:#dcf1e1;color:#2f7a4a;border-radius:999px;padding:4px 10px;white-space:nowrap}
 .sh-grid{display:grid;grid-template-columns:auto 1fr;align-items:stretch}
 .sh-l{padding:10px 12px 10px 2px;border-right:1.5px solid #2f7a4a;display:flex;justify-content:space-between;align-items:center;gap:10px;
@@ -246,6 +248,7 @@ function render(r){
   ];
   $('sheet').innerHTML = `
     <div class="sh-head">
+      <div class="sh-tag ghost-tag">Ẩm ${degree(r.am)}</div>
       <div class="sh-name">${r.name ? esc(r.name) : 'Mẫu cà phê'}</div>
       <div class="sh-tag">Ẩm ${degree(r.am)}</div>
     </div>
