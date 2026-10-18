@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#1f5e34">
+<meta name="theme-color" content="#c9efd5">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>Tính thu hồi cà phê</title>
 <link rel="icon" href="icons/icon-192.png">
@@ -13,19 +13,19 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 :root{
-  --bg:#eef7ee; --surface:#fbfefb; --ink:#1d3324; --muted:#5f7a66; --line:#d3e8d6;
-  --brand:#3f8f5a; --brand-2:#66b07c; --accent:#5cb878; --ok:#2f7d4f; --warn:#b4492f;
-  --field:#fff; --shadow:0 6px 24px rgba(47,110,68,.10);
+  --bg:#f4fbf6; --surface:#ffffff; --ink:#24402d; --muted:#6b8a73; --line:#dcefe2;
+  --brand:#5cbf7f; --brand-2:#8fd6a5; --accent:#6fcb8e; --btn:#c9efd5; --btn-ink:#1f6b3d; --ok:#2f7d4f; --warn:#b4492f;
+  --field:#fff; --shadow:0 6px 20px rgba(76,170,110,.10);
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
     --bg:#0f1912; --surface:#16241a; --ink:#e3f3e6; --muted:#93b39b; --line:#25402c;
-    --brand:#7fd39a; --brand-2:#5cb878; --accent:#7fd39a; --field:#122016; --shadow:0 6px 24px rgba(0,0,0,.35);
+    --brand:#7fd39a; --brand-2:#5cb878; --accent:#7fd39a; --btn:#7fd39a; --btn-ink:#0f1912; --field:#122016; --shadow:0 6px 24px rgba(0,0,0,.35);
   }
 }
 :root[data-theme="dark"]{
   --bg:#0f1912; --surface:#16241a; --ink:#e3f3e6; --muted:#93b39b; --line:#25402c;
-  --brand:#7fd39a; --brand-2:#5cb878; --accent:#7fd39a; --field:#122016; --shadow:0 6px 24px rgba(0,0,0,.35);
+  --brand:#7fd39a; --brand-2:#5cb878; --accent:#7fd39a; --btn:#7fd39a; --btn-ink:#0f1912; --field:#122016; --shadow:0 6px 24px rgba(0,0,0,.35);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;background:var(--bg);min-height:100%}
@@ -50,9 +50,9 @@ input:focus{border-color:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb,va
 input.bad{border-color:var(--warn)}
 .unit{position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--muted);font-weight:600;font-size:15px;pointer-events:none}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.seg{display:grid;grid-template-columns:1fr 1fr;gap:4px;background:color-mix(in srgb,var(--brand) 10%,transparent);border-radius:14px;padding:4px;margin-bottom:14px}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:4px;background:color-mix(in srgb,var(--brand) 9%,transparent);border-radius:14px;padding:4px;margin-bottom:14px}
 .seg button{min-height:42px;padding:8px;border-radius:11px;background:transparent;color:var(--ink);font-size:15px}
-.seg button.on{background:var(--brand);color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.12)}
+.seg button.on{background:var(--btn);color:var(--btn-ink);box-shadow:0 2px 8px rgba(0,0,0,.12)}
 .hint{font-size:12.5px;margin-top:6px}
 .hint:empty{display:none}
 .hint.err{color:var(--warn);font-weight:600}
@@ -60,13 +60,13 @@ input.bad{border-color:var(--warn)}
 button{font:inherit;font-weight:700;font-size:15px;border:0;border-radius:14px;padding:13px 14px;cursor:pointer;transition:transform .08s, opacity .15s;
   display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px}
 button:active{transform:scale(.97)}
-.primary{background:var(--brand);color:#fff;flex:1}
+.primary{background:var(--btn);color:var(--btn-ink);flex:1}
 :root[data-theme="dark"] .primary,:root[data-theme="dark"] .seg button.on{color:#0f1912}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .primary,:root:not([data-theme="light"]) .seg button.on{color:#0f1912}}
 .ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
 .actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
 .actions .wide{grid-column:1/-1}
-.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translate(-50%,20px);background:#1d3324;color:#fff;
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translate(-50%,20px);background:#2e5a3c;color:#fff;
   padding:12px 18px;border-radius:999px;font-size:14px;font-weight:600;opacity:0;transition:.25s;pointer-events:none;z-index:9;max-width:calc(100% - 32px);text-align:center}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 .empty{text-align:center;color:var(--muted);padding:26px 10px;font-size:14px}
@@ -74,20 +74,20 @@ button:active{transform:scale(.97)}
 
 /* ===== Result sheet (fixed light look so the copied image is always readable) ===== */
 #sheetWrap{border-radius:18px;overflow:hidden;box-shadow:var(--shadow);border:1px solid var(--line)}
-.sheet{background:#fbfefb;color:#1d3324;padding:18px 16px 14px;font-family:"Be Vietnam Pro",system-ui,sans-serif}
-.sh-head{display:grid;grid-template-columns:1fr minmax(0,auto) 1fr;align-items:center;gap:10px;border-bottom:2px solid #2f7a4a;padding-bottom:10px;margin-bottom:10px}
-.sh-name{font-size:19px;font-weight:800;color:#2f7a4a;line-height:1.2;word-break:break-word;text-align:center}
+.sheet{background:#ffffff;color:#24402d;padding:18px 16px 14px;font-family:"Be Vietnam Pro",system-ui,sans-serif}
+.sh-head{display:grid;grid-template-columns:1fr minmax(0,auto) 1fr;align-items:center;gap:10px;border-bottom:2px solid #8fd6a5;padding-bottom:10px;margin-bottom:10px}
+.sh-name{font-size:19px;font-weight:800;color:#2e8b53;line-height:1.2;word-break:break-word;text-align:center}
 .sh-tag.ghost-tag{visibility:hidden;justify-self:start}
 .sh-tag:last-child{justify-self:end}
-.sh-tag{flex:none;font-size:11.5px;font-weight:700;background:#dcf1e1;color:#2f7a4a;border-radius:999px;padding:4px 10px;white-space:nowrap}
+.sh-tag{flex:none;font-size:11.5px;font-weight:700;background:#e3f6e9;color:#2e8b53;border-radius:999px;padding:4px 10px;white-space:nowrap}
 .sh-grid{display:grid;grid-template-columns:auto 1fr;align-items:stretch}
-.sh-l{padding:10px 12px 10px 2px;border-right:1.5px solid #2f7a4a;display:flex;justify-content:space-between;align-items:center;gap:10px;
-  min-width:108px;font-size:18px;font-weight:800;color:#1d3324;font-variant-numeric:tabular-nums}
-.sh-l.sum{border-bottom:2px solid #1d3324}
+.sh-l{padding:10px 12px 10px 2px;border-right:1.5px solid #8fd6a5;display:flex;justify-content:space-between;align-items:center;gap:10px;
+  min-width:108px;font-size:18px;font-weight:800;color:#24402d;font-variant-numeric:tabular-nums}
+.sh-l.sum{border-bottom:2px solid #24402d}
 .sh-r{padding:10px 0 10px 12px;display:flex;align-items:center}
-.sh-calc{font-size:14.5px;font-weight:500;color:#28412f;line-height:1.35;word-break:break-word}
-.sh-calc b{font-weight:800;color:#2f7a4a}
-.sh-final{margin-top:10px;background:linear-gradient(135deg,#2f7a4a,#5cb878);color:#fff;border-radius:14px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.sh-calc{font-size:14.5px;font-weight:500;color:#2f4a37;line-height:1.35;word-break:break-word}
+.sh-calc b{font-weight:800;color:#2e8b53}
+.sh-final{margin-top:10px;background:linear-gradient(135deg,#d6f3df,#b4e6c4);color:#1f6b3d;border-radius:14px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px}
 .sh-final .l{font-size:13px;opacity:.9;line-height:1.3}
 .sh-final .v{font-size:26px;font-weight:800;letter-spacing:-.01em;white-space:nowrap}
 /* Ảnh xuất ra: đen trắng */
@@ -342,7 +342,7 @@ $('copyImg').addEventListener('click', async () => {
     if (!navigator.clipboard || !window.ClipboardItem) throw new Error('nosupport');
     // Truyền Promise vào ClipboardItem để Safari/iOS chấp nhận (giữ user-gesture)
     await navigator.clipboard.write([new ClipboardItem({ 'image/png': makeBlob() })]);
-    toast('✅ Đã sao chép ảnh — mở Zalo/Messenger và dán');
+    toast('✅ Đã sao chép ảnh');
   } catch (e) {
     // Không hỗ trợ copy ảnh → dùng chia sẻ
     const ok = await shareBlob().catch(()=>false);
