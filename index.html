@@ -73,18 +73,23 @@ button:active{transform:scale(.97)}
 .sheet{background:#fbfefb;color:#1d3324;padding:18px 16px 14px;font-family:"Be Vietnam Pro",system-ui,sans-serif}
 .sh-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;border-bottom:2px solid #2f7a4a;padding-bottom:10px;margin-bottom:10px}
 .sh-name{font-size:19px;font-weight:800;color:#2f7a4a;line-height:1.2;word-break:break-word}
-.sh-name.none{color:#7f9a86;font-weight:600;font-size:15px}
 .sh-tag{flex:none;font-size:11.5px;font-weight:700;background:#dcf1e1;color:#2f7a4a;border-radius:999px;padding:4px 10px;white-space:nowrap}
-.sh-row{display:grid;grid-template-columns:118px 1fr;gap:10px;padding:9px 0;border-bottom:1px dashed #cfe5d4;align-items:center}
-.sh-row:last-of-type{border-bottom:0}
-.sh-k{font-size:12px;color:#5f7a66;font-weight:600;line-height:1.2}
-.sh-v{font-size:17px;font-weight:800;color:#1d3324;margin-top:2px}
+.sh-grid{display:grid;grid-template-columns:auto 1fr;align-items:stretch}
+.sh-l{padding:10px 12px 10px 2px;border-right:1.5px solid #2f7a4a;display:flex;justify-content:space-between;align-items:center;gap:10px;
+  min-width:108px;font-size:18px;font-weight:800;color:#1d3324;font-variant-numeric:tabular-nums}
+.sh-l.sum{border-bottom:2px solid #1d3324}
+.sh-r{padding:10px 0 10px 12px;display:flex;align-items:center}
 .sh-calc{font-size:14.5px;font-weight:500;color:#28412f;line-height:1.35;word-break:break-word}
 .sh-calc b{font-weight:800;color:#2f7a4a}
 .sh-final{margin-top:10px;background:linear-gradient(135deg,#2f7a4a,#5cb878);color:#fff;border-radius:14px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px}
 .sh-final .l{font-size:13px;opacity:.9;line-height:1.3}
 .sh-final .v{font-size:26px;font-weight:800;letter-spacing:-.01em;white-space:nowrap}
-.sh-foot{margin-top:8px;font-size:11px;color:#7f9a86;text-align:right}
+/* Ảnh xuất ra: đen trắng */
+.sheet.bw{background:#fff!important;color:#000!important}
+.sheet.bw *{color:#000!important;border-color:#000!important}
+.sheet.bw .sh-tag{background:#fff;border:1.5px solid #000}
+.sheet.bw .sh-final{background:#fff;border:2px solid #000}
+.sheet.bw .sh-final .l{opacity:1}
 
 details{margin-top:4px}
 summary{cursor:pointer;font-weight:700;font-size:14px;color:var(--brand);list-style:none;display:flex;align-items:center;gap:6px}
@@ -231,31 +236,29 @@ function compute(name, kl, klq, am){
 }
 
 function render(r){
-  const now = new Date();
-  const ts = now.toLocaleDateString('vi-VN') + ' ' + now.toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'});
-  const rows = [
-    ['KL', f(r.kl) + ' g'],
-    ['KL quả', f(r.klq) + ' g'],
-    ['Tổng KL<br><span style="font-weight:500">(KL + KL quả/2)</span>', f2(r.tong) + ' g'],
-    ['', '']
+  const half = r.klq / 2;
+  const left = [
+    ['', f2(r.kl), ''],
+    ['+', f2(half), 'sum'],
+    ['', f2(r.tong), ''],
+    ['', '', '']
   ];
   $('sheet').innerHTML = `
     <div class="sh-head">
-      <div class="sh-name ${r.name ? '' : 'none'}">${r.name ? esc(r.name) : 'Mẫu cà phê'}</div>
+      <div class="sh-name">${r.name ? esc(r.name) : 'Mẫu cà phê'}</div>
       <div class="sh-tag">Ẩm ${degree(r.am)} ${r.type === 'lt' ? '&lt; 15' : '≥ 15'}</div>
     </div>
-    ${rows.map((x,i)=>`
-      <div class="sh-row">
-        <div>${x[0] ? `<div class="sh-k">${x[0]}</div><div class="sh-v">${x[1]}</div>` : ''}</div>
-        <div class="sh-calc">${r.lines[i]}</div>
-      </div>`).join('')}
-    <div class="sh-final"><div class="l">Thu hồi<br>(${MAU} / KL còn lại)</div><div class="v">${f2(r.E)} Kg</div></div>
-    <div class="sh-foot">${ts}</div>`;
+    <div class="sh-grid">
+    ${left.map((x,i)=>`
+      <div class="sh-l ${x[2]}"><span>${x[0]}</span><span>${x[1]}</span></div>
+      <div class="sh-r"><div class="sh-calc">${r.lines[i]}</div></div>`).join('')}
+    </div>
+    <div class="sh-final"><div class="l">Thu hồi<br>(${MAU} / KL còn lại)</div><div class="v">${f2(r.E)} Kg</div></div>`;
   $('empty').hidden = true; $('result').hidden = false;
   buildTable(r.hit);
   lastText = [
     r.name ? `📌 ${r.name}` : '📌 Mẫu cà phê',
-    `KL: ${f(r.kl)} g | KL quả: ${f(r.klq)} g | Tổng KL: ${f2(r.tong)} g`,
+    `${f2(r.kl)} + ${f2(r.klq/2)} = ${f2(r.tong)}`,
     ...r.lines.map(l => '• ' + l.replace(/<[^>]+>/g,'')),
     `➡️ Thu hồi: ${f2(r.E)} Kg`
   ].join('\n');
@@ -318,7 +321,7 @@ $('clearBtn').addEventListener('click', () => {
 // ===== Ảnh kết quả =====
 function toast(msg){ const t=$('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('show'),2400); }
 function makeBlob(){
-  return document.fonts.ready.then(() => html2canvas($('sheet'), { scale: Math.max(2, window.devicePixelRatio || 2), backgroundColor:'#fbfefb', useCORS:true, logging:false }))
+  return document.fonts.ready.then(() => html2canvas($('sheet'), { scale: Math.max(2, window.devicePixelRatio || 2), backgroundColor:'#ffffff', onclone: d => d.getElementById('sheet').classList.add('bw'), useCORS:true, logging:false }))
     .then(c => new Promise(res => c.toBlob(res, 'image/png')));
 }
 function fileName(){ const n = ($('name').value.trim() || 'mau').replace(/[^\p{L}\p{N}]+/gu,'_'); return `thu_hoi_${n}.png`; }
