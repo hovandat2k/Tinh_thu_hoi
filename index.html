@@ -3,10 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#3f8f5a">
+<meta name="theme-color" content="#1f5e34">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>Tính thu hồi cà phê</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☕</text></svg>">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -32,7 +33,7 @@ body{background:var(--bg);color:var(--ink);font-family:"Be Vietnam Pro",system-u
   font-size:16px;line-height:1.45;padding:0 16px calc(32px + env(safe-area-inset-bottom))}
 .wrap{max-width:560px;margin:0 auto}
 header{padding:calc(18px + env(safe-area-inset-top)) 0 14px;display:flex;align-items:center;gap:12px}
-.logo{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#3f8f5a,#7cc893);display:grid;place-items:center;font-size:24px;box-shadow:var(--shadow);flex:none}
+.logo{width:44px;height:44px;border-radius:12px;box-shadow:var(--shadow);flex:none;display:block}
 h1{font-size:20px;margin:0;font-weight:800;letter-spacing:-.01em}
 .sub{margin:0;color:var(--muted);font-size:13px}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:16px;box-shadow:var(--shadow);margin-bottom:14px}
@@ -108,7 +109,7 @@ td.hit{background:var(--accent);color:#fff;font-weight:800;border-radius:6px}
 <body>
 <div class="wrap">
   <header>
-    <div class="logo">🌱</div>
+    <img class="logo" src="icons/icon-192.png" alt="">
     <div>
       <h1>Tính thu hồi cà phê</h1>
     </div>
